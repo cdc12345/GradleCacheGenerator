@@ -1,0 +1,49 @@
+name: Gradle Build and Release Cache
+
+on:
+  pull_request:
+    types:
+      - closed
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    env:
+      GRADLE_USER_HOME: ${{ github.workspace }}/.gradle-cache
+
+    steps:
+      - name: Checkout source (merge commit)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Grant execute permission to Gradle
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Package Gradle cache
+        run: |
+          zip -r gradle-cache.zip "$GRADLE_USER_HOME"
+
+      - name: Create draft release and upload cache
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          tag_name: cache-pr-${{ github.event.pull_request.number }}
+          name: Gradle Cache (PR #${{ github.event.pull_request.number }})
+          files: gradle-cache.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
