@@ -1,9 +1,9 @@
 name: Gradle Build and Release Cache
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
+    branches:
+      - "**"
 
 permissions:
   contents: write
