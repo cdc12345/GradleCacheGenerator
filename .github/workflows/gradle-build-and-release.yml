@@ -1,16 +1,15 @@
 name: Gradle Build and Release Cache
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
+    branches:
+      - "**"
 
 permissions:
   contents: write
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     env:
