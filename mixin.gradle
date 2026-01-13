@@ -1,0 +1,18 @@
+mixin {
+    if (file("src/main/resources/usermixins.ichinizero.json").exists()) {
+        config 'usermixins.ichinizero.json'
+    }
+}
+
+jar {
+    var mixins = new ArrayList<String>()
+    if (file("src/main/resources/ichinizero.mixins.json").exists()) {
+        mixins.add("ichinizero.mixins.json")
+    }
+    if (file("src/main/resources/usermixins.ichinizero.json").exists()) {
+        mixins.add("usermixins.ichinizero.json")
+    }
+    manifest.attributes([
+            "MixinConfigs": String.join(",",mixins)
+    ])
+}
