@@ -32,14 +32,14 @@ jobs:
       - name: Gradle eclipse (Windows)
         if: runner.os == 'Windows'
         run: |
-          .\gradlew.bat
+          .\gradlew.bat init
           .\gradlew.bat eclipse
 
       - name: Gradle eclipse (Unix)
         if: runner.os != 'Windows'
         run: |
           chmod +x ./gradlew
-          ./gradlew
+          ./gradlew init
           ./gradlew eclipse
 
       # ---------- Package Gradle cache ----------
