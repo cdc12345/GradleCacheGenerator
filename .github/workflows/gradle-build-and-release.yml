@@ -1,4 +1,4 @@
-name: Gradle Build and Release Cache
+name: Gradle Eclipse and Release Cache
 
 on:
   workflow_dispatch:
@@ -9,6 +9,7 @@ permissions:
 jobs:
   build:
     strategy:
+      max-parallel: 1
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
 
@@ -27,18 +28,18 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      # ---------- Build ----------
-      - name: Build with Gradle (Windows)
+      # ---------- Gradle eclipse ----------
+      - name: Gradle eclipse (Windows)
         if: runner.os == 'Windows'
-        run: .\gradlew.bat build
+        run: .\gradlew.bat eclipse
 
-      - name: Build with Gradle (Unix)
+      - name: Gradle eclipse (Unix)
         if: runner.os != 'Windows'
         run: |
           chmod +x ./gradlew
-          ./gradlew build
+          ./gradlew eclipse
 
-      # ---------- Package cache ----------
+      # ---------- Package Gradle cache ----------
       - name: Package Gradle cache (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
