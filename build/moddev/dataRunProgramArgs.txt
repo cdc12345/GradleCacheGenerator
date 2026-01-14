@@ -1,0 +1,26 @@
+# Main Class
+cpw.mods.bootstraplauncher.BootstrapLauncher
+
+# NeoForge Run-Type Program Arguments
+--launchTarget
+forgedatauserdev
+--assetIndex
+5
+--assetsDir
+C:\\Users\\user\\.mcreator\\gradle\\caches\\neoformruntime\\assets
+--gameDir
+.
+--fml.forgeVersion
+47.4.10
+--fml.mcVersion
+1.20.1
+--fml.forgeGroup
+net.minecraftforge
+--fml.mcpVersion
+20230612.114412
+
+# User Supplied Program Arguments
+--mixin.config
+ichinizero.mixins.json
+--mixin.env.remapRefMap=true
+--mixin.env.refMapRemappingFile=C:\\Users\\user\\MCreatorWorkspaces\\ichinizero/build/createSrgToMcp/output.srg
