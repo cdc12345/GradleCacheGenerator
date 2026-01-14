@@ -28,19 +28,15 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      # ---------- Gradle eclipse ----------
-      - name: Gradle eclipse (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          .\gradlew.bat init
-          .\gradlew.bat eclipse
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
-      - name: Gradle eclipse (Unix)
-        if: runner.os != 'Windows'
-        run: |
-          chmod +x ./gradlew
-          ./gradlew init
-          ./gradlew eclipse
+      # ---------- Gradle eclipse ----------
+      - name: Gradle eclipse
+        run: .\gradlew.bat eclipse
+
+      - name: Gradle build
+        run: ./gradlew build
 
       # ---------- Package Gradle cache ----------
       - name: Package Gradle cache (Windows)
