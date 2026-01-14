@@ -8,10 +8,14 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
 
     env:
-      GRADLE_USER_HOME: ${{ github.workspace }}\.gradle-cache
+      GRADLE_USER_HOME: ${{ github.workspace }}/.gradle-cache
 
     steps:
       - name: Checkout source
@@ -23,24 +27,39 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Grant execute permission to Gradle
-        run: git update-index --chmod=+x gradlew
-
-      - name: Build with Gradle
+      # ---------- Build ----------
+      - name: Build with Gradle (Windows)
+        if: runner.os == 'Windows'
         run: .\gradlew.bat build
 
-      - name: Package Gradle cache
+      - name: Build with Gradle (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build
+
+      # ---------- Package cache ----------
+      - name: Package Gradle cache (Windows)
+        if: runner.os == 'Windows'
         shell: pwsh
         run: |
           Set-Location "$env:GRADLE_USER_HOME"
-          Compress-Archive -Path * -DestinationPath "$env:GITHUB_WORKSPACE\gradle-cache.zip"
+          Compress-Archive -Path * `
+            -DestinationPath "$env:GITHUB_WORKSPACE/gradle-cache-${{ runner.os }}.zip"
 
+      - name: Package Gradle cache (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          cd "$GRADLE_USER_HOME"
+          zip -r "$GITHUB_WORKSPACE/gradle-cache-${{ runner.os }}.zip" .
+
+      # ---------- Release ----------
       - name: Create draft release and upload cache
         uses: softprops/action-gh-release@v2
         with:
           draft: true
           tag_name: cache-${{ github.run_id }}
           name: Gradle Cache (run ${{ github.run_id }})
-          files: gradle-cache.zip
+          files: gradle-cache-${{ runner.os }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
