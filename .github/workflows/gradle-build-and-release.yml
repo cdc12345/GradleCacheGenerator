@@ -8,10 +8,10 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     env:
-      GRADLE_USER_HOME: ${{ github.workspace }}/.gradle-cache
+      GRADLE_USER_HOME: ${{ github.workspace }}\.gradle-cache
 
     steps:
       - name: Checkout source
@@ -24,15 +24,16 @@ jobs:
           java-version: 21
 
       - name: Grant execute permission to Gradle
-        run: chmod +x ./gradlew
+        run: git update-index --chmod=+x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: .\gradlew.bat build
 
       - name: Package Gradle cache
+        shell: pwsh
         run: |
-          cd "$GRADLE_USER_HOME"
-          zip -r "${{ github.workspace }}/gradle-cache.zip" .
+          Set-Location "$env:GRADLE_USER_HOME"
+          Compress-Archive -Path * -DestinationPath "$env:GITHUB_WORKSPACE\gradle-cache.zip"
 
       - name: Create draft release and upload cache
         uses: softprops/action-gh-release@v2
