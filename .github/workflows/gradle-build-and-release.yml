@@ -31,12 +31,15 @@ jobs:
       # ---------- Gradle eclipse ----------
       - name: Gradle eclipse (Windows)
         if: runner.os == 'Windows'
-        run: .\gradlew.bat eclipse
+        run: |
+          .\gradlew.bat
+          .\gradlew.bat eclipse
 
       - name: Gradle eclipse (Unix)
         if: runner.os != 'Windows'
         run: |
           chmod +x ./gradlew
+          ./gradlew
           ./gradlew eclipse
 
       # ---------- Package Gradle cache ----------
@@ -45,8 +48,8 @@ jobs:
         shell: pwsh
         run: |
           Set-Location "$env:GRADLE_USER_HOME"
-          Compress-Archive -Path * `
-            -DestinationPath "$env:GITHUB_WORKSPACE/gradle-cache-${{ runner.os }}.zip"
+          $items = Get-ChildItem -Recurse -Force -ErrorAction SilentlyContinue
+          $items | Compress-Archive -DestinationPath "$env:GITHUB_WORKSPACE\gradle-cache-Windows.zip"
 
       - name: Package Gradle cache (Unix)
         if: runner.os != 'Windows'
